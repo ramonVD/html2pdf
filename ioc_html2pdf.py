@@ -17,7 +17,10 @@ def printWTime(string):
     """Simple function to add the actual time to the start of a string"""
     print(datetime.datetime.now().strftime("%H:%M:%S") + " - " + string)
 
+class CouldntEditHtmlException(Exception):
+    pass
 
+# Change this in the future to handle multiple inputs, specific output names, etc
 def parse_document(args):
     if (len(args) > 1):
         filename = args[1]
@@ -28,6 +31,8 @@ def parse_document(args):
             output_filename = DEFAULT_OUTPUT_FILENAME + str(counter)
             counter += 1
         output_filename += ".pdf"
+
+        #Convert html file to bs4 object, and edit it
         try:
             with open(filename) as fp:
                 soup = BeautifulSoup(fp, "html.parser")
@@ -38,16 +43,16 @@ def parse_document(args):
             print("File %s is not accessible" % filename)
             return False
         
+        #convert bs4 object to pdf and write it to file
         try:
             with NamedTemporaryFile(mode="w+t",
                             dir="./", suffix=".html") as fp:
                 if (modifiedSoup == ""):
-                    raise Exception("Unable to parse html from: %s" % filename)
+                    raise CouldntEditHtmlException("Unable to parse html from: %s" % filename)
                 fp.write(str(modifiedSoup))
                 try:
                     printWTime("Starting html to pdf conversion...") if (VERBOSE) else None
                     pdfkit.from_file(fp.name, output_filename)
-                    # Change this in the future to handle multiple inputs, specific output names, etc
                     printWTime("""Finished html to pdf conversion.
 Output file is named %s""" %output_filename) if (VERBOSE) else None
                     return True
@@ -57,7 +62,7 @@ Output file is named %s""" %output_filename) if (VERBOSE) else None
                 
         except IOError:
             print("""Could not create temporal file, check directory permissions""")
-        except Exception as err:
+        except CouldntEditHtmlException as err:
             print(err)
         return False
 
