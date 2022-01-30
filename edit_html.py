@@ -12,7 +12,7 @@ def edit_html(soup):
     that would convert poorly to pdf
     without the changes.
     
-    Add more stylings and changes here as needed
+    --- Add more stylings and changes to the function as needed ---
 
     Args:
         soup ([Bs4Object]): bs4 object that contains
@@ -43,7 +43,7 @@ def edit_html(soup):
         tab_counter = 0
         tab_final_style = tab_style
         for tab in tabs:
-            # Do not add a black bottom border to the last tab in the pane
+            # Add a black bottom border to all but the last tab in the pane
             if (tab_counter < len(tabs) - 1):
                 tab_final_style = tab_style + "border-bottom: %s" % TAB_BORDER_BOTTOM
             else:

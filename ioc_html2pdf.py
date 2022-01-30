@@ -35,7 +35,7 @@ def parse_document(args):
                 modifiedSoup = edit_html(soup)
                 printWTime("Finished editing html elements.") if (VERBOSE) else None
         except IOError:
-            print("File %s not accessible" % filename)
+            print("File %s is not accessible" % filename)
             return False
         
         try:
@@ -58,11 +58,11 @@ Output file is named %s""" %output_filename) if (VERBOSE) else None
         except IOError:
             print("""Could not create temporal file, check directory permissions""")
         except Exception as err:
-            print("uhhh", err)
+            print(err)
         return False
 
     else:
-        print("""Please input a correct html file as the argument. F.ex: python3 main.py filenameHere""")
+        print("""Please input a correct html file as the argument. F.ex: python3 ioc_html2pdf.py filename.html""")
         return False
 
 if __name__ == '__main__':
