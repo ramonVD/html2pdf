@@ -30,4 +30,4 @@ Go to the script directory then type:
 
 <code>python3 ioc_html2pdf.py **convert_this_filename.html**</code>
 
-By default the output will be a file named outputX.pdf in the same directory (output.pdf or output{number} if the old filename already exists
+By default the output will be a file named outputX.pdf in the same directory (output.pdf or output{number} if the old filename already exists)

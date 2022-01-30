@@ -5,7 +5,7 @@ import datetime
 import os
 from tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
-from edit_html import edit_html
+from DOMEditor.edit_html import edit_html
 
 # Shows messages about the actions taken by the program
 VERBOSE = True

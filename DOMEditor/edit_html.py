@@ -1,4 +1,13 @@
+"""This file includes the function used to edit some DOM
+attributes of the chosen html page (edit_html).
+It uses Beautifulsoup to parse the DOM:
+https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
+Add or remove changes to the function so that the final html 
+has what you need before being converted to pdf.
+"""
+
+# Default values to change to
 BODY_FONT_SIZE = "1.1em"
 TAB_MARGIN_BOTTOM = "15px"
 TAB_PADDING_BOTTOM = "10px"

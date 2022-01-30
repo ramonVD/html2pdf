@@ -5,7 +5,7 @@ from ioc_html2pdf import parse_document
 
 
 class TestSum(unittest.TestCase):
-    def test_list_int(self):
+    def test_html_parser(self):
         """
         Test that it can parse a simple file
         """
@@ -27,7 +27,7 @@ class TestSum(unittest.TestCase):
         result = parse_document(["", "testFile.html"])
         self.assertEqual(result, True)
 
-    def test_list_fraction(self):
+    def test_non_existing_filename(self):
         """
         Test that it fails on entering a non existant filename
         """
