@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import sys
-import pdfkit
 import datetime
 import os
 from tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
 from DOMEditor.edit_html import edit_html
+from weasyprint import HTML
 
 # Shows messages about the actions taken by the program
 VERBOSE = True
@@ -120,7 +120,7 @@ def parse_document(args):
             fp.write(str(modifiedSoup))
             try:
                 printWTime("Starting html to pdf conversion...") if (VERBOSE) else None
-                pdfkit.from_file(fp.name, output_filename, verbose=True)
+                HTML(fp.name).write_pdf(output_filename)
                 printWTime("""Finished html to pdf conversion.
 Output file is named %s""" %output_filename) if (VERBOSE) else None
                 return True
