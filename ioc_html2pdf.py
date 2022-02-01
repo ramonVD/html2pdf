@@ -5,7 +5,7 @@ import os
 from tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
 from DOMEditor.edit_html import edit_html
-from weasyprint import HTML
+import pdfkit
 
 # Shows messages about the actions taken by the program
 VERBOSE = True
@@ -13,6 +13,8 @@ VERBOSE = True
 # Output files will be called thisX.pdf (f.ex: output1.pdf, output2.pdf...)
 # unless specified otherwise
 DEFAULT_OUTPUT_FILENAME = "output"
+# Non changeable as of now
+DEFAULT_OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
 
 def printWTime(string):
     """Simple function to add the actual time to the start of a string"""
@@ -81,16 +83,22 @@ def parse_document(args):
     filename = parsed_args["inputs"][0]
 
     modifiedSoup = ""
+    if (not os.path.isdir(DEFAULT_OUTPUT_DIR)):
+        try:
+            os.mkdir(DEFAULT_OUTPUT_DIR)
+        except OSError:
+            print ("Cannot create output directory, please check directory permissions")
+            return False
 
     # Output filename will have .pdf appended afterwards, remove it if it exists already
     # This will not check for weird output filenames, maybe apply is_valid_filename...
-    final_default_output = DEFAULT_OUTPUT_FILENAME
+    final_default_output = os.path.join(DEFAULT_OUTPUT_DIR, DEFAULT_OUTPUT_FILENAME)
     if "output" in parsed_args:
         output_name = parsed_args["output"]
         if has_extension(output_name, "pdf"):
-            final_default_output = output_name[:-4]
+            final_default_output = os.path.join(DEFAULT_OUTPUT_DIR, output_name[:-4])
         else:
-            final_default_output = output_name
+            final_default_output = os.path.join(DEFAULT_OUTPUT_DIR, output_name)
 
     output_filename = final_default_output
 
@@ -120,9 +128,9 @@ def parse_document(args):
             fp.write(str(modifiedSoup))
             try:
                 printWTime("Starting html to pdf conversion...") if (VERBOSE) else None
-                HTML(fp.name).write_pdf(output_filename)
+                pdfkit.from_file(fp.name, output_filename)
                 printWTime("""Finished html to pdf conversion.
-Output file is named %s""" %output_filename) if (VERBOSE) else None
+Output file is at %s""" %output_filename) if (VERBOSE) else None
                 return True
             except Exception as e:
                 print("Error while converting to pdf: %s" % str(e))
