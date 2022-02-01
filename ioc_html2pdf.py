@@ -121,8 +121,7 @@ def parse_document(args):
 
     # Convert bs4 object to pdf and write it to file
     try:
-        with NamedTemporaryFile(mode="w+t",
-                        dir="./", suffix=".html") as fp:
+        with NamedTemporaryFile(mode="w+t", suffix=".html") as fp:
             if (modifiedSoup == ""):
                 raise CouldntEditHtmlException("Unable to parse html from: %s" % filename)
             fp.write(str(modifiedSoup))
