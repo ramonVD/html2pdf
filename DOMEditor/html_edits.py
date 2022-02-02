@@ -1,3 +1,5 @@
+from .utils import assign_attributes
+
 """This file includes the function used to edit some DOM
 attributes of the chosen html page (edit_html).
 It uses Beautifulsoup to parse the DOM:
@@ -20,7 +22,7 @@ def edit_html(soup):
     So far it only adds some stylings to elements
     that would convert poorly to pdf
     without the changes.
-    
+
     --- Add more stylings and changes to the function as needed ---
 
     Args:
@@ -31,9 +33,12 @@ def edit_html(soup):
         [soup]: bs4 object after the modifications to
         its html content
     """
-    
+
     # Change body font size
     body = soup.body
+    # small error check jic, this should exist for any valid page
+    if body == None:
+        return ""
     body["style"] = "font-size:{};".format(BODY_FONT_SIZE)
 
     # Stop hiding the insides of collapsables. May conflict with old collapsables
@@ -59,19 +64,5 @@ def edit_html(soup):
                 tab_final_style = tab_style
             assign_attributes(tab, style=tab_final_style)
             tab_counter += 1
-            
+
     return soup
-
-
-
-def assign_attributes(object, **kwargs):
-    """Assigns an arbitray amount of key / values to an object.
-    Intented use is to add attributes to an html tag in a bs4 object.
-
-    Args:
-        object: any bs4 object containing an html element.
-        intented args should be in the form key=value
-        f.ex: assign_attributes(htmlTag, style='font-size:35px;')
-    """
-    for key in kwargs:
-        object[key] = kwargs[key]
