@@ -16,8 +16,9 @@ DEFAULT_OUTPUT_FILENAME = "output"
 DEFAULT_BASEDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 # Non changeable as of now
 DEFAULT_OUTPUT_DIR = os.path.join(DEFAULT_BASEDIR, "output")
-#Just for Docker, probably set via env variable
-DEFAULT_INPUT_DIR = os.path.join(DEFAULT_BASEDIR, "")
+#Just for Docker, set via env in the Dockerfile
+docker_dir = os.getenv("INPUT_DIR","")
+DEFAULT_INPUT_DIR = os.path.join(DEFAULT_BASEDIR, docker_dir)
 
 def parse_args(args):
     """ Returns a dict with the input/output values, or an error key if there was an error.
