@@ -20,14 +20,18 @@ def is_valid_filename(filename):
     return True
 
 
-def has_extension(string, ext):
+def has_extension(string, exts):
     """Returns true/false if a string (supposedly a filename) has an extension or not.
     F.ex: index.html has_extension html -> True. hello.pdf has_extension txt -> False"""
-    if (ext[0] != "."):
-        ext = "." + ext
-    if (string[-len(ext):] != ext):
-        return False
-    return True
+    if (isinstance(exts,str)):
+        exts = [exts]
+    has_extension = False
+    for ext in exts:
+        if (ext[0] != "."):
+            ext = "." + ext
+        if (string[-len(ext):] == ext):
+            has_extension = True
+    return has_extension
 
 
 def assign_attributes(object, **kwargs):
@@ -46,12 +50,16 @@ def assign_attributes(object, **kwargs):
 """Changes relative src/href for the absolute path in the filesystem,
 used because wkhtmltopdf doesnt like importing relative stuff.
 Base_path is obtained from the function calling this one.
-Created to fix something that isnt broken (at least so far), so unused"""
+Should absolutize all types of relative paths and leave http*: / data: paths untouched.
+There may be some exceptions I have not considered, however it works for my use cases...
+!!!!Do not use if the site has some absolute and some relative paths!!!!
+If that's the case, use ^(?!http|data:) as regex for most of the cases 
+then create another for the rest or w/e"""
 
 
 def absolutize_url_paths(soup, base_path):
     all_path_elements = soup.find_all(href=True) + soup.find_all(src=True)
-    non_url_non_svg = '^(?!http|data:)'
+    non_url_non_svg = '^(?!http|data:)|^\/'
     for element in all_path_elements:
         if (has_attr(element, "src")):
             element["src"] = re.sub(non_url_non_svg, base_path, element["src"])

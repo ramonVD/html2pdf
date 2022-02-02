@@ -4,7 +4,7 @@ import os
 from tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
 from DOMEditor.html_edits import edit_html
-from DOMEditor.utils import printWTime, has_extension, is_valid_filename
+from DOMEditor.utils import printWTime, has_extension, is_valid_filename, absolutize_url_paths
 import pdfkit
 
 # Shows messages about the actions taken by the program
@@ -16,7 +16,8 @@ DEFAULT_OUTPUT_FILENAME = "output"
 DEFAULT_BASEDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 # Non changeable as of now
 DEFAULT_OUTPUT_DIR = os.path.join(DEFAULT_BASEDIR, "output")
-
+#Just for Docker, probably set via env variable
+DEFAULT_INPUT_DIR = os.path.join(DEFAULT_BASEDIR, "")
 
 def parse_args(args):
     """ Returns a dict with the input/output values, or an error key if there was an error.
@@ -35,7 +36,8 @@ def parse_args(args):
             for input in inputs[0]:
                 input.strip()
         data["inputs"] = list(
-            filter(is_valid_filename, [input.strip() for input in inputs]))
+            filter(is_valid_filename,
+                   [str(input.strip()).split('/')[-1] for input in inputs]))
 
         if (len(data["inputs"]) < 1):
             data["error"] = "Invalid input file. Please input a .html file with correct syntax."
@@ -58,15 +60,15 @@ def parse_document(args):
         error_msg = parsed_args["error"]
     else:
         for input in parsed_args["inputs"]:
-            if not has_extension(input, "html"):
-                error_msg = "Incorrect filename: %s - Input files need to have the html extension!" % input
+            if not has_extension(input, ["html", "htm"]):
+                error_msg = "Incorrect filename: %s - Input files need to have the html or htm extension!" % input
                 break
     if (len(error_msg) > 0):
         print(error_msg)
         return False
 
     # No support for multiple input filenames yet!
-    filename = parsed_args["inputs"][0]
+    filename = os.path.join(DEFAULT_INPUT_DIR, parsed_args["inputs"][0])
 
     modifiedSoup = ""
     if (not os.path.isdir(DEFAULT_OUTPUT_DIR)):
@@ -101,11 +103,10 @@ def parse_document(args):
     try:
         with open(filename) as fp:
             soup = BeautifulSoup(fp, "html.parser")
-            # UNUSED, apparently not needed. Maybe with docker.
-            # abs_path_soup = absolutize_url_paths(
-            #   soup, "file://" + DEFAULT_BASEDIR + os.sep)
+            abs_path_soup = absolutize_url_paths(
+                soup, "file://" + os.path.join(os.path.dirname(os.path.abspath(filename))) + os.sep)
             printWTime("Started editing html elements.") if (VERBOSE) else None
-            modifiedSoup = edit_html(soup)
+            modifiedSoup = edit_html(abs_path_soup)
             printWTime("Finished editing html elements.") if (
                 VERBOSE) else None
     except IOError:
@@ -122,8 +123,8 @@ def parse_document(args):
             try:
                 printWTime("Starting html to pdf conversion...") if (
                     VERBOSE) else None
-                options = {"enable-local-file-access": "",
-                           'disable-javascript': True}
+                options = {"enable-local-file-access": None,
+                           'disable-javascript': None}
                 pdfkit.from_file(fp.name, output_filename, options=options)
                 printWTime("""Finished html to pdf conversion.
 Output file is at %s""" % output_filename) if (VERBOSE) else None
