@@ -2,7 +2,7 @@
 # Small script to run docker with the required params for this image to work
 if [[ $(which docker) && $(docker --version) ]]; then
     docker run -it \
-    --mount type=bind,source=$(pwd),target=/usr/src/html2pdf/input,bind-propagation=slave,ro \
+    -v $(pwd):/usr/src/html2pdf/input \
     -v $(pwd):/usr/src/html2pdf/output \
     -u $(id -u):$(id -g) \
     ramonvd/pdfconvert:latest "$@"
