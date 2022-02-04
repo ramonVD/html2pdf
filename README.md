@@ -1,26 +1,29 @@
 # html2pdf
-Python script to modify the content of some specific html files and convert them to pdf. Changes to the html pre-conversion are found in html_edits.py.
+Python script to modify the content of an html file and convert it to pdf. 
+
+The applied changes to the html document converting it to pdf can be found in html_edits.py.
 
 There are docker images available to use the script with the default parameters without having to install dependencies.
 
 ## Usage - Choose 1 of 2 (or both)
 
 ### - Using the python script
-To install it: clone the repository, create a virtual environment for the script
 
-and finally install the required libraries
+Installing the script/libraries:
 
-Step 1 - git clone https://github.com/ramonVD/html2pdf.git
+**Step 1 -** git clone https://github.com/ramonVD/html2pdf.git
 
-Step 2 - cd html2pdf
+**Step 2 -** cd html2pdf
 
-Step 3 - python3 -m venv env
+**Step 3 -** python3 -m venv env
 
-Step 4 - source env/bin/activate
+**Step 4 -** source env/bin/activate
 
-Step 5 - pip install -r requirements.txt
+**Step 5 -** pip install -r requirements.txt
 
-Then go to the script directory and type:
+**Step 6 -** You'll need to install wkhtmltopdf if you don't have it (instructions are at the bottom of the page)
+
+You can now go to the script directory and type:
 
 <code>python3 ioc_html2pdf.py **filename.html**</code>
 
@@ -40,7 +43,7 @@ Recommended way to do things is to execute html2pdf.sh to download and execute t
 
 (it's just a small bash script to call docker with the correct binds, feel free to check it but be careful with changing the mounts, the script is picky with the defaults, specially the input dir)
 
-Keep in mind that by default the outputs will be in the same directory you execute docker/the script from.
+Keep in mind that by default the inputs need to be in the same directory you execute docker/the script from and the outputs will be generated into that same directory.
 
 
 ### If you're using the script and not the docker image, you need to install the wkhtmltopdf binaries!
