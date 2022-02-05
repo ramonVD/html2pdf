@@ -31,6 +31,9 @@ def parse_args(args):
     if (len(args) < 2):
         data["error"] = """Please input a correct html file in this directory as the first argument. F.ex: filename.html"""
     else:
+        data["pdf_verbose"] = next((x for x in ["-v", "-verbose", "-V"] if x in args), False) != False
+        if (data["pdf_verbose"]):
+            args = list(filter(lambda x: x.lower() not in ["-v", "-verbose"], args))
         inputs = [args[1].strip()] if len(args) == 2 else args[1:-1]
         # Inputs may be separated by commas instead of spaces
         if (len(inputs) == 1):
@@ -118,7 +121,7 @@ def parse_document(args):
 
     # Convert bs4 object to pdf and write it to file
     try:
-        with NamedTemporaryFile(mode="w+t", dir="./", suffix=".html") as fp:
+        with NamedTemporaryFile(mode="w+t", suffix=".html") as fp:
             if (modifiedSoup == ""):
                 raise CouldntEditHtmlException(
                     "Unable to parse %s html" % str(filename).split('/')[-1])
@@ -129,7 +132,7 @@ def parse_document(args):
                 options = {"enable-local-file-access": None,
                            'disable-javascript': None}
                 pdfkit.from_file(fp.name, output_filename,
-                                 options=options, verbose=True)
+                                 options=options, verbose=parsed_args["pdf_verbose"])
                 printWTime("""Finished html to pdf conversion. Output file is named %s""" % str(
                     output_filename).split('/')[-1]) if (VERBOSE) else None
                 return True
