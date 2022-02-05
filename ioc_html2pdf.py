@@ -16,9 +16,10 @@ DEFAULT_OUTPUT_FILENAME = "output"
 DEFAULT_BASEDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 # Non changeable as of now
 DEFAULT_OUTPUT_DIR = os.path.join(DEFAULT_BASEDIR, "output")
-#Just for Docker, set via env in the Dockerfile
-docker_dir = os.getenv("INPUT_DIR","")
+# Just for Docker, set via env in the Dockerfile
+docker_dir = os.getenv("INPUT_DIR", "")
 DEFAULT_INPUT_DIR = os.path.join(DEFAULT_BASEDIR, docker_dir)
+
 
 def parse_args(args):
     """ Returns a dict with the input/output values, or an error key if there was an error.
@@ -28,7 +29,7 @@ def parse_args(args):
     """
     data = {}
     if (len(args) < 2):
-        data["error"] = """Please input a correct html file as the first argument. F.ex: python3 ioc_html2pdf.py filename.html"""
+        data["error"] = """Please input a correct html file in this directory as the first argument. F.ex: filename.html"""
     else:
         inputs = [args[1].strip()] if len(args) == 2 else args[1:-1]
         # Inputs may be separated by commas instead of spaces
@@ -41,7 +42,7 @@ def parse_args(args):
                    [str(input.strip()).split('/')[-1] for input in inputs]))
 
         if (len(data["inputs"]) < 1):
-            data["error"] = "Invalid input file. Please input a .html file with correct syntax."
+            data["error"] = "Invalid input file. Please input a .htm/html file with correct syntax."
 
         if (len(args) > 2):
             data["output"] = args[-1]
@@ -111,7 +112,8 @@ def parse_document(args):
             printWTime("Finished editing html elements.") if (
                 VERBOSE) else None
     except IOError:
-        print("File %s is not accessible" % filename)
+        print("Could not open %s, check file path." %
+              str(filename).split('/')[-1])
         return False
 
     # Convert bs4 object to pdf and write it to file
@@ -119,20 +121,22 @@ def parse_document(args):
         with NamedTemporaryFile(mode="w+t", dir="./", suffix=".html") as fp:
             if (modifiedSoup == ""):
                 raise CouldntEditHtmlException(
-                    "Unable to parse html from: %s" % filename)
+                    "Unable to parse %s html" % str(filename).split('/')[-1])
             fp.write(str(modifiedSoup))
             try:
                 printWTime("Starting html to pdf conversion...") if (
                     VERBOSE) else None
                 options = {"enable-local-file-access": None,
                            'disable-javascript': None}
-                pdfkit.from_file(fp.name, output_filename, options=options)
-                printWTime("""Finished html to pdf conversion.
-Output file is at %s""" % output_filename) if (VERBOSE) else None
+                pdfkit.from_file(fp.name, output_filename,
+                                 options=options, verbose=True)
+                printWTime("""Finished html to pdf conversion. Output file is named %s""" % str(
+                    output_filename).split('/')[-1]) if (VERBOSE) else None
                 return True
             except Exception as e:
                 print("Error while converting to pdf: %s" % str(e))
-                print("Check output file at %s" % output_filename)
+                printWTime("Check output file at %s" %
+                           str(output_filename).split('/')[-1])
 
     except IOError:
         print("""Could not create temporal file, check directory permissions""")

@@ -15,6 +15,4 @@ VOLUME "/tmp/"
 COPY . .
 
 ENTRYPOINT ["python3", "ioc_html2pdf.py"]
-
-# Default filename used if no args
-CMD ["index.html"]
+# No default command CMD [...]
